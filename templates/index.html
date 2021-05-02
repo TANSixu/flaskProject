@@ -3,15 +3,18 @@
 <head>
     <meta charset="utf-8">
     <title>{{ name }}'s Watchlist</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" type="text/css">
+    <link rel="icon" class="avatar" href="{{url_for('static', filename='rocket.ico')}}">
 </head>
 <body>
     <h2>{{ name }}'s Watchlist</h2>
     <p>{{ movies|length }} Titles</p>
-    <ul>
+    <ul class="movie-list">
         {% for movie in movies %}
         <li>{{movie.title}} - {{movie.year}}</li>
         {% endfor %}
     </ul>
+    <img alt="UVA" class="totora" src="{{url_for('static', filename='images/uva.png')}}">
     <footer>
         <small>&copy; 2018 MarsStudio</small>
     </footer>
