@@ -7,7 +7,7 @@
     <link rel="icon" class="avatar" href="{{url_for('static', filename='rocket.ico')}}">
 </head>
 <body>
-    <h2>{{ name }}'s Watchlist</h2>
+    <h2>{{ user.name }}'s Watchlist</h2>
     <p>{{ movies|length }} Titles</p>
     <ul class="movie-list">
         {% for movie in movies %}
@@ -16,7 +16,7 @@
     </ul>
     <img alt="UVA" class="totora" src="{{url_for('static', filename='images/uva.png')}}">
     <footer>
-        <small>&copy; 2018 MarsStudio</small>
+        <small>&copy; 2021 MarsStudio</small>
     </footer>
 </body>
 </html>
