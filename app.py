@@ -35,6 +35,10 @@ def test_url_for():
     print(url_for('test_url_for'))
     return 'TEST page'
 
+@app.context_processor
+def inject_user():
+    user=User.query.first()
+    return dict(user=user)
 
 def forge():
     db.create_all()
@@ -59,13 +63,18 @@ def forge():
         db.session.add(movie)
     db.session.commit()
     click.echo('Done.')
+    
+@app.errorhandler(404)
+def page_not_found(e):
+    # user=User.query.first()
+    return render_template('404.html'),404
 
 
 @app.route('/')
 def index():
-    user=User.query.first()
+    # user=User.query.first()
     movies=Movie.query.all()
-    return render_template('index.html',user=user, movies=movies)
+    return render_template('index.html',movies=movies)
 
 if __name__ == '__main__':
     app.run()
