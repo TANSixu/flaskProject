@@ -1,5 +1,8 @@
+from watchlist import app, db
+from watchlist.models import Movie, User
+from watchlist.commands import forge, initdb
 import unittest
-from app import app, db, Movie, User,forge, initdb
+
 
 class WatchlistTestCase(unittest.TestCase):
     def setUp(self):
@@ -8,15 +11,15 @@ class WatchlistTestCase(unittest.TestCase):
             SQLALCHEMY_DATABASE_URI='sqlite:///:memory:'
         )
         db.create_all()
-        user=User(name='Test', username='test')
+        user = User(name='Test', username='test')
         user.set_password('123')
-        movie=Movie(title='Test Movie Title', year='2019')
+        movie = Movie(title='Test Movie Title', year='2019')
 
         db.session.add_all([user, movie])
         db.session.commit()
 
-        self.client=app.test_client()
-        self.runner=app.test_cli_runner()
+        self.client = app.test_client()
+        self.runner = app.test_cli_runner()
 
     def tearDown(self):
         db.session.remove()
@@ -29,6 +32,7 @@ class WatchlistTestCase(unittest.TestCase):
         self.assertTrue(app.config['TESTING'])
 
         # 测试 404 页面
+
     def test_404_page(self):
         response = self.client.get('/nothing')  # 传入目标 URL
         data = response.get_data(as_text=True)
@@ -37,6 +41,7 @@ class WatchlistTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 404)  # 判断响应状态码
 
         # 测试主页
+
     def test_index_page(self):
         response = self.client.get('/')
         data = response.get_data(as_text=True)
@@ -44,15 +49,14 @@ class WatchlistTestCase(unittest.TestCase):
         self.assertIn('Test Movie Title', data)
         self.assertEqual(response.status_code, 200)
 
-
- # 辅助方法，用于登入用户
+    # 辅助方法，用于登入用户
     def login(self):
         self.client.post('/login', data=dict(
             username='test',
             password='123'
         ), follow_redirects=True)
 
- # 测试创建条目
+    # 测试创建条目
     def test_create_item(self):
         self.login()
 
@@ -234,7 +238,7 @@ class WatchlistTestCase(unittest.TestCase):
         self.assertNotIn('Settings updated.', data)
         self.assertIn('Invalid input.', data)
 
-# 测试虚拟数据
+    # 测试虚拟数据
     def test_forge_command(self):
         result = self.runner.invoke(forge)
         self.assertIn('Done.', result.output)
