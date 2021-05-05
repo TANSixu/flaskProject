@@ -6,7 +6,7 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager
 from flask_login import UserMixin
-from flask_login import login_required, logout_user, current_user
+from flask_login import login_required, logout_user, current_user, login_user
 
 
 
@@ -81,7 +81,16 @@ def admin(username, password):
     db.session.commit()
     click.echo('All done.')
 
+@app.cli.command()  # 注册为命令
+@click.option('--drop', is_flag=True, help='Create after drop.')  # 设置选项
+def initdb(drop):
+    """Initialize the database."""
+    if drop:  # 判断是否输入了选项
+        db.drop_all()
+    db.create_all()
+    click.echo('Initialized database.')  # 输出提示信息
 
+@app.cli.command()
 def forge():
     db.create_all()
     name = 'MarsTSX'
@@ -98,7 +107,8 @@ def forge():
         {'title': 'The Pork of Music', 'year': '2012'},
     ]
 
-    user=User(name=name)
+    user=User(name=name, username='Mars')
+    user.set_password('123456')
     db.session.add(user)
     for m in movies:
         movie=Movie(title=m['title'], year=m['year'])
@@ -143,7 +153,7 @@ def login():
         user=User.query.first()
 
         if username==user.username and user.validate_password(password):
-            login(user)
+            login_user(user)
             flash('Login success.')
             return redirect(url_for('index'))
 
@@ -197,14 +207,15 @@ def settings():
         name=request.form['name']
 
         if not name or len(name)>20:
-            flash('Invalid input')
+            flash('Invalid input.')
             return redirect(url_for('settings'))
         current_user.name=name
 
         db.session.commit()
-        flash('Settings updated')
+        flash('Settings updated.')
         return redirect(url_for('index'))
-    return render_template('settrings.html')
+    return render_template('settings.html')
 
 if __name__ == '__main__':
+    # forge()
     app.run()
